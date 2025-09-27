@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lektion 01 – Playlist</title>
+  <style>
+    body{font-family:system-ui,Arial,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;line-height:1.6}
+    h1{margin-bottom:8px}
+    .track{display:flex;justify-content:space-between;align-items:center;border:1px solid #ddd;border-radius:12px;padding:12px 14px;margin:10px 0;cursor:pointer}
+    .track.active{border-color:#333;background:#fafafa}
+    .small{color:#666;font-size:.9em;margin-top:-6px}
+    .controls{display:flex;gap:8px;margin:12px 0}
+    button{padding:8px 12px;border:1px solid #ddd;border-radius:10px;background:#fff;cursor:pointer}
+    button:hover{background:#f4f4f4}
+  </style>
+</head>
+<body>
+
+  <h1>Lektion 01 – Playlist</h1>
+  <p class="small">روی هر «Teil» بزن تا همان فایل پخش شود.</p>
+
+  <!-- پلیر -->
+  <audio id="player" controls style="width:100%;margin:10px 0" preload="none"></audio>
+
+  <div class="controls">
+    <button id="prevBtn">◀︎ قبلی</button>
+    <button id="nextBtn">بعدی ▶︎</button>
+    <a id="downloadLink" download><button>دانلود فایل جاری ⤓</button></a>
+  </div>
+
+  <!-- لیست ترک‌ها (فقط این آرایه را ویرایش کن) -->
+  <script>
+    // فقط اسم فایل‌ها را مطابق فایل‌هایی که آپلود کرده‌ای وارد کن:
+    const tracks = [
+      { title: "Teil 01", file: "Lektion 01 - Teil 01 .mp3" },
+      // وقتی Teilهای بعدی را آپلود کردی، اینجا اضافه کن. مثلاً:
+      // { title: "Teil 02", file: "Lektion 01 - Teil 02.mp3" },
+      // { title: "Teil 03", file: "Lektion 01 - Teil 03.mp3" },
+    ];
+
+    // --- از اینجا به بعد را دست نزن ---
+    const player = document.getElementById("player");
+    const downloadLink = document.getElementById("downloadLink");
+    let current = 0;
+
+    function setSrc(i){
+      current = i;
+      player.src = tracks[i].file;
+      downloadLink.href = tracks[i].file;
+      document.querySelectorAll(".track").forEach((el,idx)=>{
+        el.classList.toggle("active", idx===i);
+      });
+      document.title = "Lektion 01 – " + tracks[i].title;
+    }
+
+    function renderList(){
+      const container = document.createElement("div");
+      tracks.forEach((t, i)=>{
+        const row = document.createElement("div");
+        row.className = "track";
+        row.innerHTML = `<span>Teil ${String(i+1).padStart(2,"0")}</span><span style="color:#666">${t.file}</span>`;
+        row.onclick = ()=>{ setSrc(i); player.play(); };
+        container.appendChild(row);
+      });
+      document.body.appendChild(container);
+    }
+
+    renderList();
+    setSrc(0);
+
+    player.addEventListener("ended", ()=>{
+      if (current < tracks.length - 1){ setSrc(current+1); player.play(); }
+    });
+
+    document.getElementById("prevBtn").onclick = ()=>{
+      if (current>0){ setSrc(current-1); player.play(); }
+    };
+    document.getElementById("nextBtn").onclick = ()=>{
+      if (current<tracks.length-1){ setSrc(current+1); player.play(); }
+    };
+  </script>
+
+  <p class="small">© Playlist – GitHub Pages</p>
+</body>
+</html>
